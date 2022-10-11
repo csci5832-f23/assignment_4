@@ -21,21 +21,27 @@ def scale_predict(x: torch.Tensor, x_max: torch.Tensor, x_min: torch.Tensor):
     return (x - x_min)/(x_max - x_min)
 
 
-class LogisticRegressor(torch.nn.Module):
+class BinaryLogisticRegressor(torch.nn.Module):
     def __init__(self, input_dim: int):
         super().__init__()
         # We force output to be one, since we are doing binary logistic regression
-        self.output_size = 1
-        self.coefficients = torch.nn.Linear(input_dim, self.output_size)
+        self.linear = torch.nn.Sequential(
+            torch.nn.Linear(input_dim, 1),
+            torch.nn.Sigmoid()
+        )
         # Initialize weights. Note that this is not strictly necessary,
         # but you should test different initializations per lecture
-        torch.nn.init.uniform_(self.coefficients.weight)
-        self.coefficients.bias.data *= 0
+
+        def init_weights(linear):
+            if type(linear) == torch.nn.Linear:
+                torch.nn.init.uniform_(linear.weight)
+
+        self.linear.apply(init_weights)
 
     def forward(self, features: torch.Tensor):
         # We predict a number by multipling by the coefficients
         # and then take the sigmoid to turn the score as logits
-        return torch.sigmoid(self.coefficients(features))
+        return self.linear(features)
 
     def predict(self, features: torch.Tensor):
         with torch.no_grad():
@@ -87,4 +93,3 @@ def training_loop_no_pad(
 
     # Return the trained model
     return model
-
