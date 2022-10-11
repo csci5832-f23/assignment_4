@@ -4,6 +4,12 @@ import random
 from util import *
 
 
+def init_weights(linear):
+    if type(linear) == torch.nn.Linear:
+        torch.nn.init.uniform_(linear.weight)
+        torch.nn.init.zeros_(linear.bias)
+
+
 def logistic_loss(prediction: torch.Tensor, label: torch.Tensor) -> torch.Tensor:
     """
     logistic loss: Mean of -y*log(y_cap) - (1-y)*log(1 - y_cap)
@@ -21,6 +27,25 @@ def scale_predict(x: torch.Tensor, x_max: torch.Tensor, x_min: torch.Tensor):
     return (x - x_min)/(x_max - x_min)
 
 
+class MultiLogisticRegressor(torch.nn.Module):
+    def __init__(self, input_dim, num_classes):
+        super().__init__()
+        self.linear = torch.nn.Sequential(
+            torch.nn.Linear(input_dim, num_classes),
+            torch.nn.Sigmoid()
+        )
+        self.linear.apply(init_weights)
+
+    def forward(self, features: torch.Tensor):
+        # We predict a number by multipling by the coefficients
+        # and then take the sigmoid to turn the score as logits
+        return self.linear(features)
+
+    def predict(self, features: torch.Tensor):
+        with torch.no_grad():
+            return torch.argmax(self.forward(features), dim=1)
+
+
 class BinaryLogisticRegressor(torch.nn.Module):
     def __init__(self, input_dim: int):
         super().__init__()
@@ -31,10 +56,6 @@ class BinaryLogisticRegressor(torch.nn.Module):
         )
         # Initialize weights. Note that this is not strictly necessary,
         # but you should test different initializations per lecture
-
-        def init_weights(linear):
-            if type(linear) == torch.nn.Linear:
-                torch.nn.init.uniform_(linear.weight)
 
         self.linear.apply(init_weights)
 
@@ -56,7 +77,7 @@ def training_loop_no_pad(
         dev_features,
         dev_labels,
         optimizer,
-        model
+        model, device, which_label
 ):
     samples = list(zip(train_features, train_labels))
     random.shuffle(samples)
@@ -73,8 +94,10 @@ def training_loop_no_pad(
             labels = torch.stack(labels)
             optimizer.zero_grad()
             # Run the model
+            features = features.to(device)
             logits = model(features)
             # Compute loss
+            labels = labels.to(device)
             loss = logistic_loss(torch.squeeze(logits), labels)
             # In this logistic regression example,
             # this entails computing a single gradient
@@ -87,9 +110,12 @@ def training_loop_no_pad(
             losses.append(loss.item())
 
         # Estimate the f1 score for the development set
-        dev_f1 = f1_score(model.predict(dev_features), dev_labels)
+        dev_features = dev_features.to(device)
+        dev_predictions = model.predict(dev_features).detach().cpu().numpy().reshape(-1,)
+        dev_f1 = f1_score(dev_predictions, dev_labels, which_label=which_label)
+        dev_acc = accuracy(dev_predictions, dev_labels)
         print(f"epoch {i}, loss: {sum(losses) / len(losses)}")
         print(f"Dev F1 {dev_f1}")
-
+        print(f"Dev Accuracy {dev_acc}")
     # Return the trained model
     return model

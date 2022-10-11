@@ -1,4 +1,5 @@
 from numpy import logical_and, sum as t_sum
+import spacy
 
 
 def accuracy(predicted_labels, true_labels):

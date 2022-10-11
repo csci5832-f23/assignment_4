@@ -70,20 +70,25 @@ def load_datasets():
     return train_texts, train_labels, test_texts, test_labels
 
 
+def all_predicts(test_preds, test_labs):
+    print('Accuracy:', accuracy(np.array(test_preds), np.array(test_labs)))
+    print('Precision:', precision(np.array(test_preds), np.array(test_labs), which_label='1'))
+    print('Recall:', recall(np.array(test_preds), np.array(test_labs), which_label='1'))
+    print('F1-score:', f1_score(np.array(test_preds), np.array(test_labs), which_label='1'))
+
+
 if __name__ == '__main__':
-    train_t, train_labs, test_t, test_labs = load_datasets()
+    train_t, train_labels, test_t, test_labels = load_datasets()
 
     train_t_processed = [t.split() for t in train_t]
     test_t_processed = [t.split() for t in test_t]
-
-    ### Baseline: Naive Bayes ###
+    #
+    # ### Baseline: Naive Bayes ###
     nb = NaiveBayes()
-    nb.fit(train_t_processed, train_labs)
+    nb.fit(train_t_processed, train_labels)
+    _, train_probs = nb.predict(train_t_processed)
 
     t_predictions, _ = nb.predict(test_t_processed)
 
     print('Baseline: Naive Bayes Classifier')
-    print('Accuracy:', accuracy(np.array(t_predictions), np.array(test_labs)))
-    print('Precision:', precision(np.array(t_predictions), np.array(test_labs), which_label='1'))
-    print('Recall:', recall(np.array(t_predictions), np.array(test_labs), which_label='1'))
-    print('F1-score:', f1_score(np.array(t_predictions), np.array(test_labs), which_label='1'))
+    all_predicts(t_predictions, test_labels)
