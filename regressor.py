@@ -38,10 +38,11 @@ class LogisticRegressor(torch.nn.Module):
         return torch.sigmoid(self.coefficients(features))
 
     def predict(self, features: torch.Tensor):
-        return self.forward(features) > 0.5
+        with torch.no_grad():
+            return self.forward(features) > 0.5
 
 
-def training_loop(
+def training_loop_no_pad(
         num_epochs,
         batch_size,
         train_features,
@@ -80,7 +81,7 @@ def training_loop(
             losses.append(loss.item())
 
         # Estimate the f1 score for the development set
-        dev_f1 = f1_score(predict(model, dev_features), dev_labels)
+        dev_f1 = f1_score(model.predict(dev_features), dev_labels)
         print(f"epoch {i}, loss: {sum(losses) / len(losses)}")
         print(f"Dev F1 {dev_f1}")
 
