@@ -29,16 +29,13 @@ def featurize(texts, nlp):
 
 
 class NaiveBayes:
-    def __init__(self, nlp, vocab=None, add_unk=False):
+    def __init__(self, vocab=None, add_unk=False):
         """
         Initialize the Naive Bayes classifier
-        :param nlp: spacy.Language
-            The spaCy model
         :param vocab: dict
             A predefined dictionary of words in the data
         :return:
         """
-        self.nlp = nlp
         self.prior = None
         self.i2label = None
         self.class_word_logprobs = None
@@ -63,8 +60,7 @@ class NaiveBayes:
             text_vectors.append(curr_vector)
         return vstack(text_vectors)
 
-    def fit(self, texts, labels):
-        tokenized_data = featurize(texts, self.nlp)
+    def fit(self, tokenized_data, labels):
         self.i2label = sorted(list(set(labels)))
         label2i = {lab: i for i, lab in enumerate(self.i2label)}
 
@@ -74,7 +70,7 @@ class NaiveBayes:
             if self.add_unk:
                 self.vocab[UNK_TOKEN] = len(self.vocab)
 
-        text_vectors = self.vectorize(tokenized_data, len(texts))
+        text_vectors = self.vectorize(tokenized_data, len(tokenized_data))
 
         label_vector = []
         for label in labels:
@@ -92,14 +88,13 @@ class NaiveBayes:
         self.prior = np.array([label_counter[self.i2label[i]] for i in self.i2label])
         self.prior = np.log(self.prior/self.prior.sum()).reshape((1, -1))
 
-    def predict(self, texts):
-        tokenized_data = featurize(texts, self.nlp)
-        text_vectors = self.vectorize(tokenized_data, len(texts))
+    def predict(self, tokenized_data):
+        text_vectors = self.vectorize(tokenized_data, len(tokenized_data))
         forward_log_probs = text_vectors.dot(self.class_word_logprobs.transpose()) + self.prior
         predictions = [self.i2label[index] for index in np.argmax(forward_log_probs, axis=1)]
         forward_probs = np.exp(forward_log_probs)
         forward_probs = forward_probs/np.sum(forward_probs, axis=1).reshape((-1, 1))
-        probabilities = np.max(forward_probs, axis=1)
+        probabilities = forward_probs
         return predictions, probabilities
 
 
@@ -113,17 +108,17 @@ class NaiveBayesHW2:
         if vocab is not None:
             self.vocab = vocab
 
-    def fit(self, texts: List[str], labels: List[int]):
+    def fit(self, preprocessed_texts: List[List[str]], labels: List[int]):
         """
         1. Group samples by their labels
-        2. Preprocess each text
-        3. Count the words of the text for each label
+        2. Count the words of the text for each label
         """
-        preprocess_texts = featurize(texts, self.nlp)
-        self.vocab = {w: i for i, w in enumerate(sorted(list(set([w for ws in preprocess_texts for w in ws]))))}
+        self.vocab = {w: i for i, w in enumerate(sorted(list(set([w for ws in preprocessed_texts for w in ws]))))}
         label_texts = {}
-        self.label_count = Counter(labels)
-        for tokens, label in zip(preprocess_texts, labels):
+        unique_labels = sorted(list(set(labels)))
+        label_counter = Counter(labels)
+        self.label_count = {lab: label_counter[lab] for lab in unique_labels}
+        for tokens, label in zip(preprocessed_texts, labels):
             if label not in label_texts:
                 label_texts[label] = list(self.vocab.keys())  # smoothing: start count with Vocab
             label_texts[label].extend(tokens)
@@ -131,15 +126,13 @@ class NaiveBayesHW2:
         for label, tokens in label_texts.items():
             self.label_word_counter[label] = Counter(tokens)
 
-    def predict(self, texts: List[str]):
+    def predict(self, preprocessed_texts: List[List[str]]):
         """
-        1. Preprocess the texts
-        2. Predict the class by using the likelihood with Bayes Method and Laplace Smoothing
+        1. Predict the class by using the likelihood with Bayes Method and Laplace Smoothing
         """
-        preprocess_texts = featurize(texts, self.nlp)
         predictions = []
         pred_probs = []
-        for tokens in tqdm(preprocess_texts, desc='Predicting'):
+        for tokens in tqdm(preprocessed_texts, desc='Predicting'):
             class_log_probs = {}
             for c in self.label_count:
                 c_prior = np.log(self.label_count[c]/sum(self.label_count.values()))
@@ -153,7 +146,7 @@ class NaiveBayesHW2:
             class_probs = np.array([np.exp(v) for v in class_log_probs.values()])
             class_probs = class_probs/np.sum(class_probs)
             predictions.append(best_c)
-            pred_probs.append(np.max(class_probs))
+            pred_probs.append(class_probs)
 
         return predictions, pred_probs
 
@@ -163,15 +156,18 @@ if __name__ == '__main__':
                 'something', 'other thing', 'yes']
     my_labels = [1, 0, 1, 0, 1, 0, 0]
     my_nlp = spacy.load('en_core_web_sm')
+    tokenized_data_ = featurize(my_texts, my_nlp)
 
-    naive_bayes = NaiveBayes(my_nlp, add_unk=False)
-    naive_bayes.fit(my_texts, my_labels)
+    naive_bayes = NaiveBayes(add_unk=False)
+    naive_bayes.fit(tokenized_data_, my_labels)
 
-    preds = naive_bayes.predict(['good sentence', 'worse sentence', 'bad', 'good and amazing', 'what?', ''])
+    tokenized_data_test = featurize(['good sentence', 'worse sentence', 'bad', 'good and amazing', 'what?', ''], my_nlp)
+
+    preds = naive_bayes.predict(tokenized_data_test)
     print('my Naive:', preds)
 
     naive_bayes_hw = NaiveBayesHW2(2, my_nlp)
-    naive_bayes_hw.fit(my_texts, my_labels)
-    preds = naive_bayes_hw.predict(['good sentence', 'worse sentence', 'bad', 'good and amazing', 'what?', ''])
+    naive_bayes_hw.fit(tokenized_data_, my_labels)
+    preds = naive_bayes_hw.predict(tokenized_data_test)
     print('hw2 Naive:', preds)
 
