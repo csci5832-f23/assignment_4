@@ -85,7 +85,7 @@ class NaiveBayes:
 
         self.prior = np.zeros(len(self.i2label))
         label_counter = Counter(labels)
-        self.prior = np.array([label_counter[self.i2label[i]] for i in self.i2label])
+        self.prior = np.array([label_counter[i] for i in self.i2label])
         self.prior = np.log(self.prior/self.prior.sum()).reshape((1, -1))
 
     def predict(self, tokenized_data):

@@ -4,6 +4,12 @@ import zipfile
 import os
 import subprocess
 import emoji
+import torch
+import numpy as np
+
+from util import *
+from bayes import NaiveBayes
+
 
 #### READ DATASET ####
 
@@ -63,3 +69,21 @@ def load_datasets():
 
     return train_texts, train_labels, test_texts, test_labels
 
+
+if __name__ == '__main__':
+    train_t, train_labs, test_t, test_labs = load_datasets()
+
+    train_t_processed = [t.split() for t in train_t]
+    test_t_processed = [t.split() for t in test_t]
+
+    ### Baseline: Naive Bayes ###
+    nb = NaiveBayes()
+    nb.fit(train_t_processed, train_labs)
+
+    t_predictions, _ = nb.predict(test_t_processed)
+
+    print('Baseline: Naive Bayes Classifier')
+    print('Accuracy:', accuracy(np.array(t_predictions), np.array(test_labs)))
+    print('Precision:', precision(np.array(t_predictions), np.array(test_labs), which_label='1'))
+    print('Recall:', recall(np.array(t_predictions), np.array(test_labs), which_label='1'))
+    print('F1-score:', f1_score(np.array(t_predictions), np.array(test_labs), which_label='1'))
