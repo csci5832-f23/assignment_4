@@ -26,5 +26,11 @@
 
 ## Tasks
 
-  - Task A: Irony Detection in Twitter tweets with Twitter GloVe Vectors and Binary Logistic Regression
-  - Task B: Fake News Detection in Politifact texts using WorldNews Glove Vectors and MultiClass Logistic Regression
+  - Task A: Irony Detection in Twitter tweets with Twitter GloVe Vectors and Binary Logistic Regression (Total: 40 Points out of 100)
+     - Fill in the missing code in [Irony Detection.ipynb](Irony&#32;Detection.ipynb)
+  - Task B: Fake News Detection in Politifact texts using WorldNews Glove Vectors and MultiClass Logistic Regression (Total: 60 Points out of 100)
+     - Fill in the missing code in [Fake News Detection.ipynb](Fake&#32;News&#32;Detection.ipynb)
+
+## Submission
+
+   - TBA
