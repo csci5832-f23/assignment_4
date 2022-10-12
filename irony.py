@@ -18,10 +18,6 @@ TRAIN_FILE = SEM_EVAL_FOLDER + '/datasets/train/SemEval2018-T3-train-taskA_emoji
 TEST_FILE = SEM_EVAL_FOLDER + '/datasets/goldtest_TaskA/SemEval2018-T3_gold_test_taskA_emoji.txt'
 
 
-def git(*args):
-    return subprocess.check_call(['git'] + list(args))
-
-
 def download_dataset():
     if os.path.exists(SEM_EVAL_FOLDER):
         return

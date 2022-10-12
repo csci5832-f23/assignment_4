@@ -1,19 +1,18 @@
 import os
 from irony import git
-import shutil
-import urllib
-import zipfile
 import spacy
 from bayes import NaiveBayes
+from util import download_zip
 
 
 FAKE_NEWS_FOLDER = 'siamese-BERT-fake-news-detection-LIAR'
 TRAIN_FILE = './siamese-BERT-fake-news-detection-LIAR/LIAR-PLUS/dataset/train2.tsv'
 VALID_FILE = './siamese-BERT-fake-news-detection-LIAR/LIAR-PLUS/dataset/val2.tsv'
 TEST_FILE = './siamese-BERT-fake-news-detection-LIAR/LIAR-PLUS/dataset/test2.tsv'
+FAKE_NEW_REPO = 'https://github.com/manideep2510/siamese-BERT-fake-news-detection-LIAR.git'
 
 
-def download_dataset():
+def download_fake_news():
     if os.path.exists(FAKE_NEWS_FOLDER):
         return
     else:
@@ -25,21 +24,7 @@ def download_dataset():
             pass
 
     print('Downloading dataset')
-    path_to_zip_file = 'SemEval2018-Task3.zip'
-    # Download the dataset zipped file
-    urllib.request.urlretrieve('https://github.com/manideep2510/siamese-BERT-fake-news-detection-LIAR/master.zip',
-                               path_to_zip_file)
-    # Unzip the dataset
-    with zipfile.ZipFile(path_to_zip_file, 'r') as zip_ref:
-        zip_ref.extractall('./')
-    # Delete any existing sem eval folder
-    if os.path.exists(FAKE_NEWS_FOLDER):
-        shutil.rmtree(FAKE_NEWS_FOLDER)
-    # Remove zip file
-    if os.path.exists(path_to_zip_file):
-        os.remove(path_to_zip_file)
-    # Rename sem eval folder name
-    shutil.move(FAKE_NEWS_FOLDER + '-master', FAKE_NEWS_FOLDER)
+    download_zip('https://github.com/manideep2510/siamese-BERT-fake-news-detection-LIAR/master.zip', FAKE_NEWS_FOLDER)
 
 
 def load_fake_news(file_path):
