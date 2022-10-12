@@ -26,5 +26,5 @@
 
 ## Tasks
 
-  - Task A: Baselines
-  - Task B: Logistic Regression with Word2Vec/Glove
+  - Task A: Irony Detection in Twitter tweets with Twitter GloVe Vectors and Binary Logistic Regression
+  - Task B: Fake News Detection in Politifact texts using WorldNews Glove Vectors and MultiClass Logistic Regression
