@@ -4,6 +4,7 @@ import os
 import shutil
 import urllib
 import subprocess
+from typing import List
 
 
 def accuracy(predicted_labels, true_labels):
@@ -53,6 +54,15 @@ def f1_score(predicted_labels, true_labels, which_label=1):
         return 2*P*R/(P+R)
     else:
         return 0.
+
+
+def avg_f1_score(predicted_labels: List[int], true_labels: List[int], classes: List[int]):
+    """
+    Calculate the f1-score for each class and return the average of it
+
+    :return: float
+    """
+    raise NotImplementedError("Calculate the f1-score for each class and return the average of it")
 
 
 def download_zip(url: str, dir_path: str):
