@@ -72,7 +72,7 @@ def run_nb_baseline():
     print('F1-score Ironic:', f1_score(t_predictions, test_labels, label2i['1']))
 
     # average f1 score of ironic and non-ironic class
-    print('Avg F1-score:', avg_f1_score(t_predictions, test_labels, list(label2i.keys())))
+    print('Avg F1-score:', avg_f1_score(t_predictions, test_labels, list(label2i.values())))
 
 
 if __name__ == '__main__':
