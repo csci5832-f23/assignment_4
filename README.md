@@ -33,4 +33,5 @@
      
 ## Submission
 
-   - TBA
+   - Format: Single merged PDF of Task A and B
+   - Due Date: October 25, 2022. Extra Credit: TBA
