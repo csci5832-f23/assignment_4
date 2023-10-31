@@ -1,35 +1,22 @@
-# Assignment 4: Text Classification with Word Vectors
-
+# Assignment 4: Natural Language Inference with BERT
 ## Prerequisites
 
- - Install Anaconda
+ - Connect to Google Colab: [https://colab.research.google.com/](https://colab.research.google.com/)
+ - Open [NLI.ipynb](NLI.ipynb) in Collab by either uploading the file or follow:
 
- - Create a new conda environment (in the Terminal):
+```sh
+File -> Open Notebook -> Github -> https://github.com/csci5832-f23/assignment_4 -> csci5832-f23/assignment_4 -> NLI.ipynb
+```
+ - Using GPUs: Look at the top right side of Google Colab's pane
 
-    `conda create --name py39 python=3.9`
-    
- - Activate the environment:
+   ![Screenshot from 2023-10-31 17-43-47](https://github.com/csci5832-f23/assignment_4/assets/10776106/6c3f5a97-0a5c-47bd-8f23-e1eebdf1e570)
 
-     `conda activate py39`
+    - Click the button -> Change Runtime Type -> T4 GPU -> Save
 
-## Getting Started
+   ![Screenshot from 2023-10-31 17-45-39](https://github.com/csci5832-f23/assignment_4/assets/10776106/cc026b0b-17d3-48a9-96b2-77567a132a05)
 
-  - Clone the repo, Enter the assignment directory
-     
-      ` git clone https://github.com/csci5832-f22/assignment_4.git `
-      
-      ` cd assignment_4 `
-        
-  - Install required libraries
+You should now see: ![Screenshot from 2023-10-31 17-47-51](https://github.com/csci5832-f23/assignment_4/assets/10776106/25f8a0c0-53fa-4a03-965a-0079dc65899e)
 
-     ` pip install -r requirements.txt`
-
-## Tasks
-
-  - Task A: Irony Detection in Twitter tweets with Twitter GloVe Vectors and Binary Logistic Regression (Total: 50 Points out of 100)
-     - Fill in the missing code in [Irony Detection.ipynb](Part&#32;A&#32;-&#32;Irony&#32;Detection.ipynb)
-  - Task B: Fake News Detection in Politifact texts using WorldNews Glove Vectors and MultiClass Logistic Regression (Total: 50 Points out of 100)
-     - This is a completely written assignment. We will be focusing on another task for which the feature engineering is not straightforward: Fake News Detection. You will need to find the paper that presents state of the art (SotA) results for the dataset introduced in ["Liar, Liar Pants on Fire": A New Benchmark Dataset for Fake News Detection](https://arxiv.org/abs/1705.00648). Then, explain the model that achieves those results. And finally propose how you would improve on the results. You can use tools like https://scholar.google.com and https://www.connectedpapers.com in this task. (There will be extra credit if you show preliminary results of your implementations)
      
 ## Submission
 
