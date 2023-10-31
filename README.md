@@ -20,5 +20,5 @@ You should now see: ![Screenshot from 2023-10-31 17-47-51](https://github.com/cs
      
 ## Submission
 
-   - Format: Single merged PDF of Task A and B
-   - Due Date: October 25, 2022. Extra Credit: TBA
+   - Format: Single merged PDF
+   - Due Date: TBA
